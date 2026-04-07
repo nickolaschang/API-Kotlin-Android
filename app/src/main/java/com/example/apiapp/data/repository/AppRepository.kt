@@ -11,9 +11,9 @@ class AppRepository @Inject constructor(
     private val apiService: ApiService
 ) {
 
-    suspend fun login(username: String, password: String): Result<LoginResponse> {
+    suspend fun login(location: String, username: String, password: String): Result<LoginResponse> {
         return try {
-            val response = apiService.login(LoginRequest(username, password))
+            val response = apiService.login(location, LoginRequest(username, password))
             Result.success(response)
         } catch (e: HttpException) {
             val errorBody = e.response()?.errorBody()?.string() ?: "Login failed (${e.code()})"

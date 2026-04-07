@@ -26,9 +26,9 @@ class AppRepositoryTest {
     @Test
     fun `login returns success when API call succeeds`() = runTest {
         val expected = LoginResponse("testKeypass")
-        whenever(apiService.login(LoginRequest("user", "pass"))).thenReturn(expected)
+        whenever(apiService.login("sydney", LoginRequest("user", "pass"))).thenReturn(expected)
 
-        val result = repository.login("user", "pass")
+        val result = repository.login("sydney", "user", "pass")
 
         assertTrue(result.isSuccess)
         assertEquals("testKeypass", result.getOrNull()?.keypass)
@@ -36,10 +36,10 @@ class AppRepositoryTest {
 
     @Test
     fun `login returns failure when API call throws`() = runTest {
-        whenever(apiService.login(LoginRequest("user", "pass")))
+        whenever(apiService.login("sydney", LoginRequest("user", "pass")))
             .thenThrow(RuntimeException("Network error"))
 
-        val result = repository.login("user", "pass")
+        val result = repository.login("sydney", "user", "pass")
 
         assertTrue(result.isFailure)
         assertEquals("Network error", result.exceptionOrNull()?.message)

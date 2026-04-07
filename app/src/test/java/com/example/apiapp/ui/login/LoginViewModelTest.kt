@@ -43,7 +43,7 @@ class LoginViewModelTest {
 
     @Test
     fun `login with blank username shows error`() {
-        viewModel.login("", "password")
+        viewModel.login("sydney", "", "password")
 
         val state = viewModel.loginState.value
         assertTrue(state is LoginViewModel.LoginState.Error)
@@ -52,7 +52,7 @@ class LoginViewModelTest {
 
     @Test
     fun `login with blank password shows error`() {
-        viewModel.login("user", "")
+        viewModel.login("sydney", "user", "")
 
         val state = viewModel.loginState.value
         assertTrue(state is LoginViewModel.LoginState.Error)
@@ -60,10 +60,10 @@ class LoginViewModelTest {
 
     @Test
     fun `successful login emits success state`() = runTest(testDispatcher) {
-        whenever(repository.login("user", "pass"))
+        whenever(repository.login("sydney", "user", "pass"))
             .thenReturn(Result.success(LoginResponse("myKeypass")))
 
-        viewModel.login("user", "pass")
+        viewModel.login("sydney", "user", "pass")
         advanceUntilIdle()
 
         val state = viewModel.loginState.value
@@ -73,10 +73,10 @@ class LoginViewModelTest {
 
     @Test
     fun `failed login emits error state`() = runTest(testDispatcher) {
-        whenever(repository.login("user", "pass"))
+        whenever(repository.login("sydney", "user", "pass"))
             .thenReturn(Result.failure(RuntimeException("Invalid credentials")))
 
-        viewModel.login("user", "pass")
+        viewModel.login("sydney", "user", "pass")
         advanceUntilIdle()
 
         val state = viewModel.loginState.value

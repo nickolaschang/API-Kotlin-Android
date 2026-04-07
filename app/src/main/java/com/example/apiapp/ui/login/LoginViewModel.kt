@@ -17,7 +17,7 @@ class LoginViewModel @Inject constructor(
     private val _loginState = MutableLiveData<LoginState>()
     val loginState: LiveData<LoginState> = _loginState
 
-    fun login(username: String, password: String) {
+    fun login(location: String, username: String, password: String) {
         if (username.isBlank() || password.isBlank()) {
             _loginState.value = LoginState.Error("Username and password are required")
             return
@@ -25,7 +25,7 @@ class LoginViewModel @Inject constructor(
 
         _loginState.value = LoginState.Loading
         viewModelScope.launch {
-            val result = repository.login(username, password)
+            val result = repository.login(location, username, password)
             result.onSuccess { response ->
                 _loginState.value = LoginState.Success(response.keypass)
             }.onFailure { error ->
