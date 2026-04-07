@@ -17,6 +17,10 @@ class DashboardViewModel @Inject constructor(
     private val _dashboardState = MutableLiveData<DashboardState>()
     val dashboardState: LiveData<DashboardState> = _dashboardState
 
+    fun setDemoEntities(entities: List<Map<String, String>>) {
+        _dashboardState.value = DashboardState.Success(entities)
+    }
+
     fun loadEntities(keypass: String) {
         _dashboardState.value = DashboardState.Loading
         viewModelScope.launch {

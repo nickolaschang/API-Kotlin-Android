@@ -64,7 +64,14 @@ class DashboardActivity : AppCompatActivity() {
             }
         }
 
-        val keypass = intent.getStringExtra("keypass") ?: ""
-        viewModel.loadEntities(keypass)
+        val demoJson = intent.getStringExtra("demoEntities")
+        if (demoJson != null) {
+            val type = object : com.google.gson.reflect.TypeToken<List<Map<String, String>>>() {}.type
+            val entities: List<Map<String, String>> = Gson().fromJson(demoJson, type)
+            viewModel.setDemoEntities(entities)
+        } else {
+            val keypass = intent.getStringExtra("keypass") ?: ""
+            viewModel.loadEntities(keypass)
+        }
     }
 }
