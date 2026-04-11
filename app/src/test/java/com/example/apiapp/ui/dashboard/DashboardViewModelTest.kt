@@ -42,10 +42,10 @@ class DashboardViewModelTest {
     }
 
     @Test
-    fun `loadEntities emits success with entities`() = runTest(testDispatcher) {
+    fun `loadEntities emits success and populates filtered entities`() = runTest(testDispatcher) {
         val entities = listOf(
-            mapOf("name" to "Item1", "type" to "TypeA", "description" to "Desc1"),
-            mapOf("name" to "Item2", "type" to "TypeB", "description" to "Desc2")
+            mapOf("dishName" to "Sushi", "origin" to "Japan", "mealType" to "Lunch/Dinner", "description" to "Desc1"),
+            mapOf("dishName" to "Pizza", "origin" to "Italy", "mealType" to "Lunch/Dinner", "description" to "Desc2")
         )
         val response = DashboardResponse(entities, 2)
         whenever(repository.getDashboard("keypass"))
@@ -54,9 +54,9 @@ class DashboardViewModelTest {
         viewModel.loadEntities("keypass")
         advanceUntilIdle()
 
-        val state = viewModel.dashboardState.value
-        assertTrue(state is DashboardViewModel.DashboardState.Success)
-        assertEquals(2, (state as DashboardViewModel.DashboardState.Success).entities.size)
+        assertTrue(viewModel.dashboardState.value is DashboardViewModel.DashboardState.Success)
+        assertEquals(2, viewModel.filteredEntities.value?.size)
+        assertEquals(2, viewModel.stats.value?.total)
     }
 
     @Test
@@ -70,5 +70,39 @@ class DashboardViewModelTest {
         val state = viewModel.dashboardState.value
         assertTrue(state is DashboardViewModel.DashboardState.Error)
         assertEquals("Connection failed", (state as DashboardViewModel.DashboardState.Error).message)
+    }
+
+    @Test
+    fun `setSearchQuery filters entities by any field`() = runTest(testDispatcher) {
+        val entities = listOf(
+            mapOf("dishName" to "Sushi", "origin" to "Japan", "mealType" to "Lunch", "description" to "rice dish"),
+            mapOf("dishName" to "Pizza", "origin" to "Italy", "mealType" to "Dinner", "description" to "dough based")
+        )
+        whenever(repository.getDashboard("keypass"))
+            .thenReturn(Result.success(DashboardResponse(entities, 2)))
+
+        viewModel.loadEntities("keypass")
+        advanceUntilIdle()
+
+        viewModel.setSearchQuery("japan")
+        assertEquals(1, viewModel.filteredEntities.value?.size)
+        assertEquals("Sushi", viewModel.filteredEntities.value?.first()?.get("dishName"))
+    }
+
+    @Test
+    fun `setFilter filters entities by category`() = runTest(testDispatcher) {
+        val entities = listOf(
+            mapOf("dishName" to "Sushi", "mealType" to "Lunch", "description" to "d1"),
+            mapOf("dishName" to "Croissant", "mealType" to "Breakfast", "description" to "d2")
+        )
+        whenever(repository.getDashboard("keypass"))
+            .thenReturn(Result.success(DashboardResponse(entities, 2)))
+
+        viewModel.loadEntities("keypass")
+        advanceUntilIdle()
+
+        viewModel.setFilter("Breakfast")
+        assertEquals(1, viewModel.filteredEntities.value?.size)
+        assertEquals("Croissant", viewModel.filteredEntities.value?.first()?.get("dishName"))
     }
 }

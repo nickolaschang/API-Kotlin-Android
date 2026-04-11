@@ -26,6 +26,7 @@
 
         <activity android:name=".ui.dashboard.DashboardActivity" />
         <activity android:name=".ui.details.DetailsActivity" />
+        <activity android:name=".ui.vulndemo.VulnDemoActivity" />
     </application>
 
 </manifest>

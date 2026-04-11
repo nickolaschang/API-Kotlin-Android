@@ -1,9 +1,34 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Base application theme. -->
-    <style name="Base.Theme.ApiApp" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Customize your light theme here. -->
-        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+
+    <style name="Base.Theme.ApiApp" parent="Theme.Material3.Light.NoActionBar">
+        <!-- Brand colors -->
+        <item name="colorPrimary">@color/brand_primary</item>
+        <item name="colorPrimaryDark">@color/brand_primary_dark</item>
+        <item name="colorOnPrimary">@color/white</item>
+        <item name="colorAccent">@color/brand_accent</item>
+        <item name="colorSecondary">@color/brand_accent</item>
+
+        <!-- Window + surfaces -->
+        <item name="android:windowBackground">@color/surface_bg</item>
+        <item name="android:statusBarColor">@color/brand_gradient_start</item>
+        <item name="android:navigationBarColor">@color/surface_bg</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:windowLightNavigationBar">true</item>
+
+        <!-- Default text colors -->
+        <item name="android:textColor">@color/text_primary</item>
+        <item name="android:textColorPrimary">@color/text_primary</item>
+        <item name="android:textColorSecondary">@color/text_secondary</item>
+        <item name="android:textColorHint">@color/text_hint</item>
+
+        <!-- Default widget styles applied app-wide.
+             We only override materialCardViewStyle because it's safe and
+             every card in the app uses the same shape. Other components
+             (Button, TextInputLayout, Chip) use explicit style="..." in
+             their layouts to avoid Material3 theme-default inflation quirks. -->
+        <item name="materialCardViewStyle">@style/Widget.App.Card</item>
     </style>
 
     <style name="Theme.ApiApp" parent="Base.Theme.ApiApp" />
+
 </resources>

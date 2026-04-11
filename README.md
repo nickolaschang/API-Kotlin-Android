@@ -4,7 +4,7 @@ Android application demonstrating API integration, MVVM architecture, and depend
 
 ## Features
 
-- **Login Screen** — Authenticates users via the NIT3213 API using username and student ID
+- **Login Screen** — Authenticates users via the NIT3213 API using student ID (username) and first name (password)
 - **Dashboard Screen** — Displays a list of entities from the API in a RecyclerView
 - **Details Screen** — Shows full details of a selected entity including its description
 
@@ -41,8 +41,25 @@ Base URL: `https://nit3213api.onrender.com/`
 
 | Endpoint | Method | Description |
 |---|---|---|
-| `/sydney/auth` | POST | Authenticate with username and password |
+| `/footscray/auth` | POST | Authenticate (Footscray campus) |
+| `/sydney/auth` | POST | Authenticate (Sydney campus) |
 | `/dashboard/{keypass}` | GET | Retrieve entity list using keypass from login |
+
+The app allows selecting between Footscray and Sydney from a dropdown on the login screen.
+
+### Credentials
+
+Per the course update, the login body uses:
+
+```json
+{
+  "username": "sYourStudentID",
+  "password": "YourFirstName"
+}
+```
+
+- **Username**: your student ID (e.g. `s12345678`)
+- **Password**: your first name
 
 ## Running the App
 

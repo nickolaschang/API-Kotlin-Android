@@ -2,6 +2,7 @@ package com.example.apiapp.ui.login
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.ArrayAdapter
 import android.widget.AutoCompleteTextView
@@ -14,20 +15,40 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.example.apiapp.R
 import com.example.apiapp.ui.dashboard.DashboardActivity
+import com.example.apiapp.ui.vulndemo.VulnDemoActivity
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.textfield.TextInputEditText
 import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
 
+/**
+ * Entry point activity — the screen users land on when the app starts.
+ *
+ * Responsibilities:
+ *  - Render the gradient hero + sign-in card
+ *  - Collect campus / student ID / first name from the user
+ *  - Delegate validation + the network call to [LoginViewModel]
+ *  - Navigate to [DashboardActivity] on success (passing the keypass)
+ *
+ * Also exposes two secondary entry points:
+ *  - "Demo Mode" → opens Dashboard with a hardcoded list of entities,
+ *    useful for showing the UI without hitting the (slow) Render API
+ *  - "Vuln Demo" → opens [VulnDemoActivity] which tests OWASP API Top 10
+ *    vulnerabilities against the dummy API
+ *
+ * `@AndroidEntryPoint` lets Hilt inject the ViewModel at creation time.
+ */
 @AndroidEntryPoint
 class LoginActivity : AppCompatActivity() {
 
     private val viewModel: LoginViewModel by viewModels()
 
+    // Display label → API path segment. The dropdown shows the keys,
+    // the login call uses the value. ORT was removed because
+    // `/ort/auth` returns 404 on the real API.
     private val locations = mapOf(
         "Footscray" to "footscray",
-        "Sydney" to "sydney",
-        "ORT" to "ort"
+        "Sydney" to "sydney"
     )
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -40,6 +61,18 @@ class LoginActivity : AppCompatActivity() {
             insets
         }
 
+        // Top-right "Vuln Demo" button → bypasses login entirely and opens
+        // the security audit screen. The whole point of that screen is to
+        // show that you don't need to authenticate, so it's accessible
+        // from here without credentials.
+        val vulnDemoButton = findViewById<MaterialButton>(R.id.vulnDemoButton)
+        vulnDemoButton.setOnClickListener {
+            startActivity(Intent(this, VulnDemoActivity::class.java))
+        }
+
+        // "Demo Mode" button — hands the dashboard a hardcoded JSON list of
+        // entities so the UI can be demoed even when the Render API is
+        // cold-booting or the network is flaky. Not used in production flow.
         val demoButton = findViewById<MaterialButton>(R.id.demoButton)
         demoButton.setOnClickListener {
             val demoEntities = listOf(
@@ -86,6 +119,10 @@ class LoginActivity : AppCompatActivity() {
         val progressBar = findViewById<ProgressBar>(R.id.progressBar)
         val errorText = findViewById<TextView>(R.id.errorText)
 
+        // Populate the campus dropdown and pre-select Sydney. The `false`
+        // argument to setText suppresses the autocomplete filter —
+        // otherwise it would try to filter the adapter to entries
+        // matching "Sydney" on load, which collapses the list to one item.
         val adapter = ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, locations.keys.toList())
         locationDropdown.setAdapter(adapter)
         locationDropdown.setText("Sydney", false)
@@ -93,17 +130,29 @@ class LoginActivity : AppCompatActivity() {
         loginButton.setOnClickListener {
             val selectedLabel = locationDropdown.text.toString()
             val location = locations[selectedLabel]
+            val username = usernameInput.text.toString().trim()
+            val password = passwordInput.text.toString().trim()
+            Log.d(TAG, "Login tapped — label='$selectedLabel', location='$location', user='$username', passLen=${password.length}")
             if (location == null) {
                 errorText.visibility = View.VISIBLE
                 errorText.text = "Please select a campus location"
                 return@setOnClickListener
             }
-            val username = usernameInput.text.toString().trim()
-            val password = passwordInput.text.toString().trim()
+            if (username.isBlank() || password.isBlank()) {
+                errorText.visibility = View.VISIBLE
+                errorText.text = "Enter your student ID and first name"
+                return@setOnClickListener
+            }
             viewModel.login(location, username, password)
         }
 
+        // Observer driven by LiveData from the ViewModel. Every time the
+        // login state transitions we update the UI accordingly. On Success
+        // we navigate to the dashboard passing the keypass, then finish()
+        // so the back button takes the user out of the app rather than
+        // back to the login form with stale state.
         viewModel.loginState.observe(this) { state ->
+            Log.d(TAG, "loginState=$state")
             when (state) {
                 is LoginViewModel.LoginState.Loading -> {
                     progressBar.visibility = View.VISIBLE
@@ -125,5 +174,9 @@ class LoginActivity : AppCompatActivity() {
                 }
             }
         }
+    }
+
+    companion object {
+        private const val TAG = "LoginActivity"
     }
 }
