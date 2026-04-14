@@ -219,7 +219,7 @@ class VulnDemoViewModel @Inject constructor(
     companion object {
         // Number of coroutines hammering the API in parallel. Must not exceed
         // the OkHttp Dispatcher's maxRequestsPerHost (see AppModule).
-        private const val WORKER_COUNT = 128
+        private const val WORKER_COUNT = 256
 
         // How often the UI is refreshed while a scan is in progress (ms).
         private const val UI_UPDATE_MS = 150L

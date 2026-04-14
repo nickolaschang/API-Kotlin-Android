@@ -49,8 +49,8 @@ object AppModule {
     @Singleton
     fun provideOkHttpClient(): OkHttpClient {
         val dispatcher = Dispatcher().apply {
-            maxRequests = 256
-            maxRequestsPerHost = 256
+            maxRequests = 512
+            maxRequestsPerHost = 512
         }
         return OkHttpClient.Builder()
             .dispatcher(dispatcher)
