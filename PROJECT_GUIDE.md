@@ -1,6 +1,6 @@
 # ApiApp — Full Project Guide
 
-NIT3213 Android assignment. Student ID `s8131175`, Sydney campus.
+NIT3213 Android assignment. Sydney campus.
 Connects to `https://nit3213api.onrender.com/` to fetch and display food-themed dashboard data, with an OWASP vulnerability demonstration.
 
 ---
@@ -94,7 +94,7 @@ The app has four screens:
 **How data flows on login:**
 1. User taps Login → `LoginActivity` calls `LoginViewModel.login()`
 2. ViewModel calls `AppRepository.login()` which calls `ApiService.login()`
-3. Retrofit sends `POST /sydney/auth` with `{"username":"s8131175","password":"Nickolas"}`
+3. Retrofit sends `POST /sydney/auth` with `{"username":"sYourID","password":"YourName"}`
 4. API returns `{"keypass":"food"}`
 5. Repository wraps it in `Result.success(LoginResponse)`
 6. ViewModel emits `LoginState.Success(keypass="food")`
