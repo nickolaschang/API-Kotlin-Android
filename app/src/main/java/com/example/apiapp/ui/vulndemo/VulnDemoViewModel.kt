@@ -13,7 +13,9 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
+import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.CopyOnWriteArrayList
+import java.util.concurrent.ThreadLocalRandom
 import java.util.concurrent.atomic.AtomicInteger
 import javax.inject.Inject
 
@@ -132,7 +134,7 @@ class VulnDemoViewModel @Inject constructor(
      * joined. A final [ScanState.Done] is then emitted with the
      * grand total.
      */
-    fun scanStudents(startId: Int) {
+    fun scanStudents(startId: Int, endId: Int) {
         // Ignore if a scan is already running — protects against
         // double taps on the Start button during the short window
         // before the state machine transitions to Scanning.
@@ -144,22 +146,25 @@ class VulnDemoViewModel @Inject constructor(
             // before any HTTP request has even been made.
             _scanState.value = ScanState.Scanning(scanned = 0, found = emptyList())
 
-            val offset = AtomicInteger(0)
             val scanned = AtomicInteger(0)
             val found = CopyOnWriteArrayList<String>()
+            val seen = ConcurrentHashMap<Int, Boolean>()
 
             val workers = List(WORKER_COUNT) {
                 launch(Dispatchers.IO) {
                     while (!stopRequested && isActive) {
-                        val i = offset.getAndIncrement()
-                        val id = "s${startId + i}"
+                        val num = ThreadLocalRandom.current().nextInt(startId, endId + 1)
+                        val id = "s$num"
                         val status = repository.enumerateStudent(id)
                         // Second stop check — in case Stop was pressed
                         // while this request was in flight, skip the
                         // accounting work and bail out.
                         if (stopRequested) return@launch
                         if (status == StudentStatus.EXISTS || status == StudentStatus.LOGGED_IN) {
-                            found.add(id)
+                            // Only add to found list if we haven't seen this ID before
+                            if (seen.putIfAbsent(num, true) == null) {
+                                found.add(id)
+                            }
                         }
                         scanned.incrementAndGet()
                     }

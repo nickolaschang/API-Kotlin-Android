@@ -287,7 +287,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="16dp"
-                        android:text="Starting student ID"
+                        android:text="Student ID range"
                         android:textAppearance="@style/TextAppearance.App.SectionLabel" />
 
                     <LinearLayout
@@ -310,7 +310,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginStart="4dp"
                             android:layout_weight="1"
-                            android:hint="Start ID"
+                            android:hint="From"
                             app:boxCornerRadiusBottomEnd="10dp"
                             app:boxCornerRadiusBottomStart="10dp"
                             app:boxCornerRadiusTopEnd="10dp"
@@ -328,10 +328,30 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginStart="8dp"
-                            android:text="→ ∞"
+                            android:layout_marginHorizontal="8dp"
+                            android:text="→"
                             android:textAppearance="@style/TextAppearance.App.Caption"
                             android:textSize="18sp" />
+
+                        <com.google.android.material.textfield.TextInputLayout
+                            style="@style/Widget.App.TextInputLayout"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:hint="To"
+                            app:boxCornerRadiusBottomEnd="10dp"
+                            app:boxCornerRadiusBottomStart="10dp"
+                            app:boxCornerRadiusTopEnd="10dp"
+                            app:boxCornerRadiusTopStart="10dp">
+
+                            <com.google.android.material.textfield.TextInputEditText
+                                android:id="@+id/scanEndInput"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:inputType="number"
+                                android:text="8132200" />
+
+                        </com.google.android.material.textfield.TextInputLayout>
 
                     </LinearLayout>
 
@@ -339,7 +359,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="4dp"
-                        android:text="Fires 128 parallel HTTP probes against /sydney/auth. Hit Stop whenever you have seen enough."
+                        android:text="Fires 128 parallel random probes within this range against /sydney/auth. Hit Stop whenever you have seen enough."
                         android:textAppearance="@style/TextAppearance.App.Caption" />
 
                     <com.google.android.material.button.MaterialButton

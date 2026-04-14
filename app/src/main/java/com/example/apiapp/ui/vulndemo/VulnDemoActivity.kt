@@ -86,6 +86,7 @@ class VulnDemoActivity : AppCompatActivity() {
     private fun setupEnumeration() {
         val scanButton = findViewById<MaterialButton>(R.id.scanButton)
         val scanStartInput = findViewById<TextInputEditText>(R.id.scanStartInput)
+        val scanEndInput = findViewById<TextInputEditText>(R.id.scanEndInput)
         val scanResultsLabel = findViewById<TextView>(R.id.scanResultsLabel)
         val scanResultsText = findViewById<TextView>(R.id.scanResultsText)
 
@@ -96,19 +97,28 @@ class VulnDemoActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
 
-            val startText = scanStartInput.text.toString().trim()
-            val startId = startText.toIntOrNull()
+            val startId = scanStartInput.text.toString().trim().toIntOrNull()
+            val endId = scanEndInput.text.toString().trim().toIntOrNull()
             if (startId == null) {
                 scanStartInput.error = "Enter a valid number"
                 return@setOnClickListener
             }
+            if (endId == null) {
+                scanEndInput.error = "Enter a valid number"
+                return@setOnClickListener
+            }
+            if (startId > endId) {
+                scanStartInput.error = "Must be ≤ end"
+                return@setOnClickListener
+            }
             scanStartInput.error = null
+            scanEndInput.error = null
             // Clear any leftover results from a previous run before
             // firing a new scan, otherwise the UI would show stale
             // "Found so far" text during the startup window.
             scanResultsLabel.visibility = View.GONE
             scanResultsText.visibility = View.GONE
-            viewModel.scanStudents(startId)
+            viewModel.scanStudents(startId, endId)
         }
     }
 
