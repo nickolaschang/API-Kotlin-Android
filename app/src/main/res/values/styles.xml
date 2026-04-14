@@ -139,10 +139,5 @@
         <item name="boxCornerRadiusBottomEnd">14dp</item>
     </style>
 
-    <style name="Widget.App.Chip.Filter" parent="Widget.Material3.Chip.Filter">
-        <item name="chipBackgroundColor">@color/card_bg</item>
-        <item name="chipStrokeColor">@color/divider</item>
-        <item name="chipStrokeWidth">1dp</item>
-    </style>
 
 </resources>
